@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { DestinoViaje } from "../model/destino-viaje.model";
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { DestinoViaje } from '../model/destino-viaje.model';
+import { DestinosApiClient } from '../model/destinos-api-client.model';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.module';
+import { ElegidoFavoritoAction, NuevoDestinoAction } from '../model/destinos-viajes-state.model';
 
 @Component({
   selector: 'app-lista-destinos',
@@ -7,16 +11,31 @@ import { DestinoViaje } from "../model/destino-viaje.model";
   styleUrls: ['./lista-destinos.component.css']
 })
 export class ListaDestinosComponent implements OnInit {
-  destinos: DestinoViaje[] = [];
-  constructor() {
-    
-   }
+
+  @Output() OnItemAdded: EventEmitter<DestinoViaje>;
+  updates: string[];
+  constructor(public destinosApiClient: DestinosApiClient, private store: Store<AppState>) {
+    this.OnItemAdded = new EventEmitter();
+    this.updates = [];
+    this.store.select(state => state.destinos.favorito)
+      .subscribe(data => {
+        if (data != null){
+          console.log(data);
+          this.updates.push('se ha elegido a ' +  data.nombre);
+        }
+      });
+  }
 
   ngOnInit(): void {
   }
 
-  guardar(nombre:String, url:String) : Boolean {
-    this.destinos.push(new DestinoViaje(nombre,url));
-    return false;
+  agregado(destino: DestinoViaje): void{
+    this.destinosApiClient.add(destino);
+    this.OnItemAdded.emit(destino);
+    this.store.dispatch(new NuevoDestinoAction(destino));
   }
+  elegido(destino: DestinoViaje): void{
+    this.destinosApiClient.elegir(destino);
+    this.store.dispatch(new ElegidoFavoritoAction(destino));
+    }
 }
