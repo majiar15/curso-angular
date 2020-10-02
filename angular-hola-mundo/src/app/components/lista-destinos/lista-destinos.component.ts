@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { DestinoViaje } from '../model/destino-viaje.model';
-import { DestinosApiClient } from '../model/destinos-api-client.model';
+import { DestinoViaje } from '../../model/destino-viaje.model';
+import { DestinosApiClient } from '../../model/destinos-api-client.model';
 import { Store } from '@ngrx/store';
-import { AppState } from '../app.module';
-import { ElegidoFavoritoAction, NuevoDestinoAction } from '../model/destinos-viajes-state.model';
+import { AppState } from '../../app.module';
+import { ElegidoFavoritoAction, NuevoDestinoAction } from '../../model/destinos-viajes-state.model';
 
 @Component({
   selector: 'app-lista-destinos',
@@ -37,8 +37,5 @@ export class ListaDestinosComponent implements OnInit {
   }
   elegido(destino: DestinoViaje): void{
     this.destinosApiClient.elegir(destino);
-  }
-  getAll(){
-
   }
 }
